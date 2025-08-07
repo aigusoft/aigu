@@ -1,2 +1,2 @@
 <!-- image -->
-<img src="./media/aigu.webp" alt="AIGU" style="width:25vmin;height:25vmin; display: block; margin: 0 auto;">
+<img src="./media/aigu.webp" alt="AIGU" style="width:25vmin;height:25vmin; display: block; margin: 0 auto; transition: all 0.3s ease;">
