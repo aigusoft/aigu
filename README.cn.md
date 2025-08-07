@@ -1,3 +1,6 @@
+<!-- image -->
+![AIGU](https://raw.githubusercontent.com/aigu/aigu/main/media/aigu.png)
+
 # AIGU - 为AI而设计的现代化 WEB UI 框架（AI Generator UI）,中文名: '艾咕'
 - 完整的现代化UI框架特性，依赖变更等
 - 完整的 __WebComponts__ 支持 
