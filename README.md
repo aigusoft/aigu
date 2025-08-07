@@ -1,2 +1,2 @@
 <!-- image -->
-![AIGU](./media/aigu.png)
+![AIGU](./media/aigu.webp)
