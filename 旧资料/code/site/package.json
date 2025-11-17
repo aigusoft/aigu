@@ -1,0 +1,13 @@
+{
+  "name": "@wcex/site",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "pub": "npm --registry \"https://registry.npmjs.org/\" publish --access public",
+    "oss":"powershell ..\\..\\..\\ossutil\\oss.ps1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>WCEX</title>
+    <meta name="viewport" content="initial-scale=1.0,width=device-width" />
+    <style>
+      html,
+      body,
+      #frame {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border: none;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe
+      id="frame"
+      title="wcex"
+    ></iframe>
+  </body>
+
+  <script>
+    var npm = "https://cdn.jsdelivr.net/";
+
+    var url =location.search.slice(1);
+    if(!(url.startsWith('http://') || url.startsWith('https://'))){
+      url = npm +url
+    }
+    if(!location.search.endsWith(".html")){
+      url = url+"/index.html"
+    }
+    var path =url.replace(/^(.*)\/.+?\.html$/,'$1');
+    document.title = url;
+    console.log("path:", path);
+    console.log("url:", url);
+
+    fetch(url,{mode:"cors"})
+      .then((v) => v.text())
+      .then((v) => {
+        console.log("html:", v);
+        // 自动处理root或者添加root标签
+        let m = v.match(/<meta\s+name="root".+?>/g);
+        var newRoot = `<meta name="root" content="${path}" >`
+        if(m){
+          v = v.replace(/<meta\s+name="root".+?>/,newRoot)
+        }else{
+          v = v.replace(/<script /,newRoot+"\n<script ")
+        }
+        document.getElementById("frame").srcdoc =v
+      });
+  </script>
+</html>

@@ -1,0 +1,61 @@
+<template>
+    <meta name="scope" open="1">
+    <style>
+        :host {
+            display: flex;
+            flex-direction: column;
+            background-color: rgb(100, 180, "$pppp");
+        }
+        .aaa{
+            transition: all 1s ease-in-out;
+        }
+    </style>
+    <div $vv="1000" >
+        <wcex-ui.icon pkg="@icon/icofont" type="icons" icon="flag"></wcex-ui.icon>
+        <wcex-ui.icon pkg="grommet-icons" type="img" icon="apple-music"></wcex-ui.icon>
+        <wcex-ui.icon pkg="@material-design-icons/svg" type="filled" icon="all_out"></wcex-ui.icon>
+            <abc-def $t1="888 +vv" ></abc-def>
+        <h3 $for="vv%10" :>H3-${value}</h3>
+        <h1 @click.stop="vv++">TES21</h1>
+        <div class="shadow aaa" :style="display: block;--shadow:${ss};tra" $ss="8" @click="ss+=8">HHHHHHH</div>
+ 
+    </div>
+    <div $bbb="{a:1,b:2}" $ccc="ccc" $>
+        <h1 class="aaa " :style="height: ${pppp}px;" :> BBB.A=${bbb.b} - CCC=${ccc}</h1>
+        <wcex-ui.btn @click.stop="aaa++;bbb.b+=aaa" $aaa="1"  :>测试按钮:${aaa}</wcex-ui.btn>
+        <wcex-ui.btn  flat @click.stop="click2()"> 二号按钮</wcex-ui.btn>
+        <wcex-ui.input $$="ccc"></wcex-ui.input>
+    </div>
+    <wcex-ui.marked $text="md" >测试按钮</wcex-ui.marked>
+    <div $vvv="''">
+        <h3 $>vvv</h3>
+    <wcex-ui.list $$="vvv">
+        <wcex-ui.btn $for="8" :>ID=${value}</wcex-ui.btn>
+    </wcex-ui.list>
+</div>
+
+    <script scope=".">
+        return class {
+            constructor() {
+            }
+            pppp=0;
+            onReady() {
+                console.log("------------------>> APP READY")
+            }
+            md=`
+## TEST ### 1.abc                       
+### 2.def
+### 3.def
+\`\`\`js
+    console.log("123")
+\`\`\`
+            `;
+            click2(){
+                this.pppp+=50;
+                console.log("click2",this.pppp)
+            }
+        }
+
+    </script>
+
+</template>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WCEX</title>
+    <meta charset="UTF-8">
+    <meta name="npm" content="https://cdn.jsdelivr.net/npm/">
+    <meta name="viewport" content="initial-scale=1.0,width=device-width">
+
+    <meta name="colors" mode="0" pri="hsl(100,50,50)">
+
+    <script src="https://cdn.jsdelivr.net/npm/wcex@1.7.77/index.js"></script>
+    <!-- <script src="http://localhost:9999/index.js"></script> -->
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            user-select: none;
+        }
+    </style>
+</head>
+<!-- 
+    标签名规则：
+    标签标准形式: [包名].[组件目录]-[组件文件名] 
+    包名可省略，默认为相对于HTML主文件相对路径下
+    helloWorld.html -> 标签名为: <hello_world>
+    如果标签名不含"-",则需在最后附加 "-"
+    例子:
+        组件: 包-> "@wcexui", 文件->/btn.html -> 标签名: <wcexui.btn->
+        组件: 包-> "@wcex/ui", 文件/btn.html -> 标签名: <wcex-ui.btn>
+        组件: 包-> "@wcexui", 文件/flat/btn.html -> 标签名: <wcexui.flat-btn>
+        组件: 包-> "@wcexui", 文件/flat/helloWorld.html -> 标签名: <wcexui.flat-hello_world>
+        组件: 包-> "@wcexui", 文件/中国/测试.html -> 标签名: <wcexui.中国-测试>
+-->
+
+<body>
+    <h1>WCEX BASIC Example</h1>
+    <main-></main->
+</body>
+<script>
+
+/**
+ * 从指定的npm包中获取指定目录下的文件列表
+ * @param {string} packageName - npm包名
+ * @param {string} directoryPath - 目录路径
+ * @param {string} cdn - cdn地址，可选值为"unpkg"或"jsdelivr"，默认为"unpkg"
+ * @returns {Promise<Array<string>>} - 文件列表
+ */
+function fetchPackageDirectoryFiles(packageName, directoryPath, cdn = "unpkg") {
+    let url;
+    if (cdn === "jsdelivr") {
+        url = `https://cdn.jsdelivr.net/npm/${packageName}/`;
+    } else {
+        url = `https://unpkg.com/${packageName}/`;
+    }
+    return fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = doc.querySelectorAll(`a[href^="${directoryPath}"]`);
+            const fileNames = Array.from(links).map(link => link.textContent.trim().replace(/\/$/, ''));
+            return fileNames;
+        });
+}
+
+
+
+
+
+</script>
+
+</html>

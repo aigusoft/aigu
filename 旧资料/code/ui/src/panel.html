@@ -1,0 +1,80 @@
+<!-- 
+  jsdoc3语法
+ @prop 
+  具有标题栏的可收缩面板
+  标题区、内容区、以及动作区
+  可调整颜色
+  @event
+  @slot
+  @plugins 
+ -->
+<template open.bool="true" $color="$color.pri" closeable.bool="false" textonly.bool="false">
+  <link rel="stylesheet" href="./css/shadow.css" />
+  <link rel="stylesheet" href="./ui.css" />
+
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel {
+      height: "$open?panelHeight+'px':0";
+    }
+
+    .title {
+      background-color: "$open?color:color.s3_.l2";
+      color: "$$color.textr";
+      padding: 0.5em 0.5em;
+      text-align: "$textonly?'center':'left'";
+    }
+
+    .title:active {
+      background-color: "$closeable?color.l1_:''";
+    }
+  </style>
+
+  <div :class="title row trans ${open?'shadow':''} nowrap" style="user-select: none" @click="if(closeable)open=!open">
+    <div $if="!textonly" :style="margin-right: 1em">
+      <slot name="icon">
+        <wcex-ui.icon $color="$root.color.l4_" size="1.5"></wcex-ui.icon>
+      </slot>
+    </div>
+
+    <h4 style="flex: 1">
+      <slot name="title"></slot>
+    </h4>
+    <!-- 打开指示条 -->
+    <wcex-ui.icon active slot="end" $color="$root.color.l5_" $icon="open?'double_arrow':'arrow_right'"
+      :style="transform: rotate(${open?90:0}deg);" $if="closeable && !textonly">
+      <div $>icon</div>
+    </wcex-ui.icon>
+  </div>
+
+  <!-- 可折叠面板 -->
+  <div class="panel trans">
+    <slot id="slot" ></slot>
+  </div>
+
+  <script scope=".">
+    return class {
+      panelHeight = 0;
+      onReady() {
+        this.update();
+        let el = this.$id.slot.assignedElements()[0];
+        if (el) {
+          this.$monitSize(el, (sz) => {
+            this.update();
+          });
+        }
+      }
+      update() {
+        if (this.$id.slot) {
+          let el = this.$id.slot.assignedElements()[0];
+          this.panelHeight = el && el.clientHeight;
+        }
+      }
+    };
+  </script>
+</template>

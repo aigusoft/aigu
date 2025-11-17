@@ -1,0 +1,181 @@
+<!-- 
+  开发面板，独立组件，无CSS依赖
+ -->
+<template tabindex="-1"  @blur.stop="showConfig=false;helpTags=null" >
+  <style>
+    :host {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      z-index: 9999;
+    }
+    .sel {
+      display: flex;
+      justify-content: right;
+      /* 垂直不拉伸 */
+      align-items: flex-start;
+      position: absolute;
+      top: ":${sel.top}px";
+      left: ":${sel.left}px";
+      width: ":${sel.width}px";
+      height: ":${sel.height}px";
+      pointer-events: none;
+      box-sizing: border-box;
+      border: 2px solid rgba(255, 0, 0, 0.5);
+      border-radius: 2px;
+    }
+    #dev {
+      display: none;
+    }
+    .tag {
+      font-size: 0.8rem;
+      display: inline-block;
+      padding: 0 0.5em;
+      text-align: right;
+      white-space: nowrap;
+      color: white;
+      background-color: rgba(43, 43, 43, 0.8);
+    }
+    :host(:focus) > #dev,
+    :host(:focus-within) > #dev,
+    :host(:focus-visible) > #dev {
+      display: flex;
+    }
+    #help {
+      left: "$helpPos=='l'?0:'50%'";
+      width: 50%;
+      height: 100%;
+      position: fixed;
+      overflow: auto;
+    }
+  </style>
+  <dev-config id="dev" $if="showConfig"></dev-config>
+  <div class="sel" $if="sel.el">
+    <div class="tag" :>&lt${sel.tag||''}&gt</div>
+  </div>
+  
+  <dev-help id="help" $tags="helpTags" $if="helpTags" ></dev-help>
+  <!-- <div  tabindex="-1" $>$json(helpTags)</div> -->
+
+  <script scope=".">
+    return class {
+      sel = {};
+      showConfig = false;
+      helpTags = null;
+      helpPos = "l";
+      onReady() {
+        if (localStorage.getItem("__DEV") != null) {
+          this.initDev();
+        }
+      }
+      // 全局监控鼠标
+      findWcElFromPoint(x, y) {
+        let el = document.elementFromPoint(x, y);
+        let wcel;
+        while (el?.shadowRoot) {
+          if (el?.shadowRoot) wcel = el;
+          // let rect = el.getBoundingClientRect();
+          let findEl = el.shadowRoot.elementFromPoint(x, y);
+          if (findEl == el) break;
+          else el = findEl;
+        }
+        return wcel;
+      }
+
+      findParentWcDeep(el, callback) {
+        let parent = el.parentNode instanceof ShadowRoot ? el.parentNode.host : el.parentNode;
+        if (!parent) return;
+
+        if (parent.rootScope) callback(parent);
+        this.findParentWcDeep(parent, callback);
+      }
+
+      findShadowChildWcDeep(el, callback) {
+        if (el.shadowRoot) {
+          for (let ch of el.shadowRoot.querySelectorAll("[wcid]")) {
+            callback(ch);
+            this.findShadowChildWcDeep(ch, callback);
+          }
+        }
+      }
+
+      async initDev() {
+        // 监控热键，调试弹窗
+        window.addEventListener("keydown", (ev) => {
+          if ((ev.ctrlKey || ev.altKey) && (ev.code.toLowerCase() == "backquote" || ev.key == "`")) {
+            console.log("Dev Panel Opened");
+            this.showConfig = true;
+            this.$next().then(() => {
+              this.$rootElem.focus();
+            });
+          }
+        });
+
+        window.addEventListener("mousemove", (ev) => {
+          if (ev.ctrlKey && ev.shiftKey) {
+            // debugger;
+            // 查找所有鼠标下面的元素，弹出按钮，点击显示组件说明
+            let el = this.findWcElFromPoint(ev.clientX, ev.clientY);
+            if (el) {
+              let { width, height, left, top } = el.getBoundingClientRect();
+              this.sel = { el, width, height, left, top, tag: el.tagName.toLowerCase() };
+            } else {
+              this.sel = {};
+            }
+          } else this.sel = {};
+        });
+        window.addEventListener("contextmenu", (ev) => {
+          if (ev.ctrlKey && ev.shiftKey) {
+            ev.preventDefault();
+            if (this.sel.el) {
+              this.$log(this.sel.el.tagName,this.sel.el);
+
+              // 查找关联组件
+              let tags = {};
+              tags[this.sel.el.tagName.toLowerCase()] = true;
+              // tagSets.add(this.sel.el.tagName.toLowerCase());
+              // this.$log("--!!! FIND",)
+
+              //  递归查找父组件
+              this.findParentWcDeep(this.sel.el, (el) => {
+                let tagName = el.tagName.toLowerCase();
+                if (!tags[tagName]) tags[tagName] = false;
+              });
+              // 查找自身子元素
+              for (let el of this.sel.el.querySelectorAll("[wcid]")) {
+                let tagName = el.tagName.toLowerCase();
+                if (!tags[tagName]) tags[tagName] = false;
+              }
+              // 查找shadowRoot子元素
+              this.findShadowChildWcDeep(this.sel.el, (el) => {
+                let tagName = el.tagName.toLowerCase();
+                if (!tags[tagName]) tags[tagName] = false;
+              });
+
+              // 显示组件帮助信息
+              this.helpTags = tags;
+              this.helpPos = ev.clientX>window.innerWidth/2?"l":"r";
+
+              this.$next().then(() => {
+                this.$rootElem.focus();
+              });
+
+              // this.$side("wcex-ui.dev-help", {
+              //   color: this.$color.pri.l5,
+              //   pos,
+              //   size: "50vw",
+              //   attrs: {
+              //     tags: [...tagSets].join(" "),
+              //     cur: this.sel.el.tagName.toLowerCase(),
+              //   },
+              //   autoclose: false,
+              // });
+              this.sel = {};
+            }
+          }
+        });
+        console.log("Dev Mode Opened");
+      }
+    };
+  </script>
+</template>

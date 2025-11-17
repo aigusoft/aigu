@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" color>
+  <head>
+    <title>WCEX</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <meta name="viewport" content="initial-scale=1.0,width=device-width" />
+    
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-size: 18px;
+        overflow: hidden auto;
+      }
+
+    </style>
+    <script>
+    </script>
+  </head>
+
+  <body>
+    <wcex-doc.app></wcex-doc.app>
+  </body>
+
+  <script>
+    var DOC_VER = "1.0.122";
+    var WCEX_VER = "1.9.83";
+    // Force HTTPS
+    if(!(location.host=="localhost" || location.hostname.startsWith("127.") || location.hostname.startsWith("192."))){
+      // if(location.protocol !== "https:") location.href = "https:" + window.location.href.substring(window.location.protocol.length);
+    }
+
+    // 默认加载英文文档,如果浏览器语言是中文则加载中文文档, 右上角可以切换语言
+    // 中文使用本地cdn,英文使用jsdelivr
+    var lang = navigator.language.indexOf("zh") >= 0 ? "cn" : "en";
+    var cdn = "https://fastly.jsdelivr.net/npm";
+
+    // 加载wcex脚本
+    var _createEl = ( tag, attrs) => {
+      let el = document.createElement(tag);
+      for (let key in attrs) {
+        el.setAttribute(key, attrs[key]);
+      }
+      document.head.appendChild(el);
+      return el;
+    };
+    _createEl( "meta", { name:"npm", content:cdn});
+    var WCEX_URL =  `${cdn}/wcex@${WCEX_VER}/index.js`;
+    // var WCEX_URL= "http://127.0.0.1:9999/index.js"
+    _createEl( "script", { src:WCEX_URL}).addEventListener("load", () => {
+      window.dispatchEvent(new Event("DOMContentLoaded"));
+    }); 
+
+  </script>
+</html>
